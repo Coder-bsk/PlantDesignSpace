@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><link rel="icon" href="logo.svg" type="image/svg+xml"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Checkout | Plant design Space</title><meta name="description" content="Checkout for Plant design Space automation tools.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"><script>try{var t=localStorage.getItem("pds-theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}</script></head><body><div id="hd"></div>
+<section class="pg"><div class="wrap"><h1>Checkout</h1><div id="empty" hidden><p class="lead">Your cart is empty.</p><a class="btn" href="tools/index.html">Browse tools</a></div>
+<div class="two" id="co"><div class="panel"><h3>Your tools</h3><div id="items"></div>
+<label class="f" style="margin-top:18px">Promo code<span style="display:flex;gap:8px"><input id="pc" placeholder="NEW10 or REF10" autocomplete="off"><button class="btn sm alt" id="ap" type="button">Apply</button></span></label><div class="msg" id="pm" role="status"></div></div>
+<div class="panel"><h3>Pay</h3><label class="f">Name<input id="cn2" required></label><label class="f">Email (licence details are sent here)<input id="ce" type="email" required></label><label class="f">Phone<input id="cp" type="tel" required></label>
+<div class="line"><span>Subtotal</span><span id="st"></span></div><div class="line"><span>Discount</span><span id="ds">₹0</span></div><div class="line"><span class="tot">Total</span><span class="tot" id="tt"></span></div>
+<button class="btn y" id="pay" style="width:100%;margin-top:16px">Pay with Razorpay</button><div class="msg" id="om" role="status"></div></div></div></div></section>
+<div id="ft"></div><script>var ROOT=""</script><script src="site-data.js"></script><script src="app.js"></script><script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+let off=0;
+function calc(){const c=cart.get(),it=Object.entries(c).map(([k,p])=>{const t=TOOLS.find(x=>x.name==k);return t?{k,p,v:t.price[p]}:null}).filter(Boolean);
+ const st=it.reduce((a,b)=>a+b.v,0),ds=Math.round(st*off/100);return{it,st,ds,tt:st-ds}}
+function draw(){const r=calc();$('#empty').hidden=r.it.length>0;$('#co').hidden=!r.it.length;
+ $('#items').innerHTML=r.it.map(i=>`<div class="line"><span>${i.k} <small>(${i.p})</small> <button class="x" data-k="${i.k}">Remove</button></span><b>${inr(i.v)}</b></div>`).join('');
+ $('#st').textContent=inr(r.st);$('#ds').textContent='−'+inr(r.ds);$('#tt').textContent=inr(r.tt)}
+$('#items').onclick=e=>{const k=e.target.dataset.k;if(!k)return;const c=cart.get();delete c[k];cart.set(c);draw()};
+$('#ap').onclick=()=>{const c=$('#pc').value.trim().toUpperCase(),m=$('#pm');
+ if(PROMOS[c]){off=PROMOS[c];m.className='msg ok';m.textContent=c+' applied: '+off+'% off'}else{off=0;m.className='msg er';m.textContent='That code is not valid. Try NEW10 or REF10.'}draw()};
+$('#pay').onclick=()=>{const r=calc(),n=$('#cn2').value.trim(),em=$('#ce').value.trim(),ph=$('#cp').value.trim(),m=$('#om');
+ if(!r.it.length||!n||!/^\S+@\S+\.\S+$/.test(em)||!ph){m.className='msg er';m.textContent='Enter your name, a valid email and phone.';return}
+ const names=r.it.map(i=>i.k+' ('+i.p+')').join(', ');
+ const rz=new Razorpay({key:CFG.rzpKey,amount:r.tt*100,currency:'INR',name:'Plant design Space',description:names,prefill:{name:n,email:em,contact:ph},theme:{color:'#1a56ff'},
+  handler:async res=>{cart.set({});m.className='msg ok';m.textContent='Payment received. ID: '+res.razorpay_payment_id+'. We will email licence details to '+em+'.';
+   $('#co').innerHTML='<div class="panel"><h3>Thank you</h3><p>'+m.textContent+'</p><a class="btn" href="tools/index.html">Back to tools</a></div>';
+   try{await send({name:n,email:em,subject:'Order '+res.razorpay_payment_id,message:'Tools: '+names+'\nPaid: '+inr(r.tt)+'\nPhone: '+ph})}catch(x){}}});
+ rz.on('payment.failed',x=>{m.className='msg er';m.textContent='Payment failed: '+x.error.description});rz.open()};
+draw();
+</script></body></html>
