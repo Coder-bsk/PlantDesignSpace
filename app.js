@@ -5,7 +5,7 @@ const CFG={
  whatsapp:'917401721841',                // WhatsApp number, country code first, digits only
  demo:'IdnGaT8-wOY',                      // default demo video (YouTube ID) shown on every tool page
  gform:{url:'',name:'',email:'',phone:'',topic:'',message:''}, // Google Form for enquiries (see README)
- api:''                                  // URL of the Python mailer, e.g. 'https://mail.example.com/api/send' (see mailer/README.txt)
+ api:'https://script.google.com/macros/s/AKfycbxqwhD3asNTkxPuatrFDkpYgKO8VJWtlb_ty9IwSMhZW_WzxRMeN7APkFK0JRNWqTPa6w/exec'                                  // URL of the Python mailer, e.g. 'https://mail.example.com/api/send' (see mailer/README.txt)
 };
 const TOOLS=typeof SITE!=='undefined'?SITE.tools:[];
 const slug=n=>n.toLowerCase().replace(/[^a-z0-9]+/g,'-');
