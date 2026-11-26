@@ -15,6 +15,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SECTIONS = ['training', 'services', 'tools']
 BTN = {'training': 'View courses', 'services': 'Explore consulting', 'tools': 'Browse tools'}
 e = html.escape
+ARR_R = '<svg class="ar" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 BOOT = '<script>try{var t=localStorage.getItem("pds-theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}</script>'
 
 
@@ -73,7 +74,7 @@ def rows(items, strip):
     for m in items:
         link = os.path.basename(m['url']) if strip else m['url']
         enq = ('../' if strip else '') + 'contact.html?topic=' + quote(m['topic'], safe='')
-        out += (f'<div class="r"><h3>{e(m["name"])}</h3><p>{e(m["summary"])}</p>'
+        out += (f'<div class="r"><h3><a class="stretch" href="{link}">{e(m["name"])}</a></h3><p>{e(m["summary"])}</p>'
                 f'<div class="row2"><a class="btn sm" href="{link}">Details</a><a class="btn sm alt" href="{enq}">Enquire</a></div></div>')
     return out
 
@@ -96,9 +97,10 @@ def tools_index(items):
             + foot('../') + '''<script>
 const pf=$('#pf');['All',...new Set(TOOLS.map(t=>t.product))].forEach(p=>pf.add(new Option(p,p)));
 const thumb=t=>`<div class="thumb">${t.img?`<img src="${ROOT+t.img}" alt="${t.name} preview" loading="lazy">`:'<span>GIF preview<br>coming soon</span>'}</div>`;
+const REQ=`<article class="reqcard"><h3>Need a tool we do not have?</h3><p class="mut">Tell us the task you repeat most. We will reply with a scope and price.</p><a class="btn sm" href="#" data-rq>Request a new tool</a></article>`;
 function draw(){const c=cart.get();$('#grid').innerHTML=TOOLS.filter(t=>pf.value=='All'||t.product==pf.value).map(t=>{const k=t.name,sel=c[k]||'Annual';return `<article class="tool ${c[k]?'in':''}" data-k="${k}">${thumb(t)}<h3><a href="${ROOT+t.url}" style="color:inherit;text-decoration:none">${k}</a></h3><small>${t.product} · ${t.module} · ${t.cat} · v${t.ver}</small>
 <label class="f" style="margin:0">Plan<select class="pl">${Object.entries(t.price).map(([p,v])=>`<option value="${p}" ${p==sel?'selected':''}>${p} · ${inr(v)}</option>`).join('')}</select></label>
-<div style="display:flex;gap:8px;margin-top:auto"><a class="btn sm alt" href="${ROOT+t.url}">Details</a><button class="btn sm ${c[k]?'alt':''}" style="margin:0">${c[k]?'Remove from cart':'Add to cart'}</button></div></article>`}).join('')}
+<div style="display:flex;gap:8px;margin-top:auto"><a class="btn sm alt" href="${ROOT+t.url}">Details</a><button class="btn sm ${c[k]?'alt':''}" style="margin:0">${c[k]?'Remove from cart':'Add to cart'}</button></div></article>`}).join('')+REQ}
 pf.onchange=draw;
 $('#grid').onclick=e=>{const b=e.target.closest('button');if(!b)return;const a=b.closest('.tool'),k=a.dataset.k,c=cart.get();if(c[k])delete c[k];else c[k]=a.querySelector('select').value;cart.set(c);draw()};
 $('#grid').onchange=e=>{const a=e.target.closest('.tool'),k=a.dataset.k,c=cart.get();if(c[k]){c[k]=e.target.value;cart.set(c)}};
@@ -120,14 +122,14 @@ def main_page(site):
             stats += f'<div><b>{len(site[s])}</b>{lab}</div>'
     if site['tools']:
         stats += '<div><b>3</b>Ways to buy a tool</div>'
-    out = head('Aveva consulting and training', 'Consulting, Aveva training and PML automation tools for plant design teams.', '')
+    out = head('Aveva consulting and training', 'Greenfield and brownfield project support, Aveva software support, training and digital solutions for plant design teams.', '')
     out += part('hero.html').replace('{{HERO_BTNS}}', btns)
     if stats:
         out += f'<section><div class="wrap"><div class="stats">{stats}</div></div></section>\n'
     out += part('about.html').replace('{{ABOUT_BTN}}', about_btn)
     spec = {
-        'training': ('Training', 'Courses taught by working designers', 'Course dates and fees are shared on enquiry.', 'All training courses'),
-        'services': ('Consulting', 'Consulting that plugs into your team', 'Experienced engineers who deliver in your project standards.', 'All consulting services'),
+        'training': ('Training', 'Aveva training from modelling to administration', 'Courses taught by working designers. Dates and fees are shared on enquiry.', 'All training courses'),
+        'services': ('Consulting', 'Project and software support for your team', 'Greenfield and brownfield project support, Aveva software support and digital solutions.', 'All consulting services'),
         'tools': ('Tools', 'Our latest tools', '', 'Explore all tools'),
     }
     n = 0
@@ -137,9 +139,9 @@ def main_page(site):
         for m in site[s][:3] if s == 'tools' else site[s]:
             if s == 'tools':
                 cards += (f'<a class="card" href="{m["url"]}">{thumb(m, "")}<h3>{e(m["name"])}</h3><small class="mut">{e(m["product"])} · {e(m["module"])} · {e(m["cat"])}</small>'
-                          '<span class="go">View tool →</span></a>')
+                          '<span class="go">View tool' + ARR_R + '</span></a>')
             else:
-                cards += (f'<a class="card" href="{m["url"]}"><h3>{e(m["name"])}</h3><p>{e(m["summary"])}</p><span class="go">Learn more →</span></a>')
+                cards += (f'<a class="card" href="{m["url"]}"><h3>{e(m["name"])}</h3><p>{e(m["summary"])}</p><span class="go">Learn more' + ARR_R + '</span></a>')
         cls = ' class="alt"' if n % 2 else ''
         lead_html = '<p class="mut">' + lead + '</p>' if lead else ''
         out += (f'<section{cls}><div class="wrap"><span class="kick">{kick}</span><h2>{h2}</h2>{lead_html}'
@@ -156,8 +158,8 @@ def build():
     write('site-data.js', 'const SITE=' + json.dumps(data, ensure_ascii=False) + ';\n')
     write('index.html', main_page(site))
     pages = {
-        'training': ('Training', 'Taught by working designers. Course dates and fees are shared on enquiry.', 'Aveva E3D, Admin, PML, Diagrams, Engineering and Unified Engineering training.'),
-        'services': ('Consulting', 'Experienced engineers who plug into your project team and deliver in your standards.', 'Oil and gas engineering, Aveva E3D, digital twin and manpower consulting.'),
+        'training': ('Training', 'Taught by working designers. Course dates and fees are shared on enquiry.', 'Aveva E3D modelling and administration, PML and PMLNet, Diagrams and Engineering training.'),
+        'services': ('Consulting', 'Greenfield and brownfield project support, Aveva software support and digital solutions from engineers who deliver in your standards.', 'Greenfield and brownfield project support, Aveva software support and digital solutions.'),
     }
     for s in SECTIONS:
         idx = os.path.join(HERE, s, 'index.html')

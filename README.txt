@@ -1,7 +1,20 @@
-Open index.html. Edit CFG at top of app.js:
-- rzpKey: your Razorpay Key ID (test: rzp_test_...). Never put the Key Secret in the site.
-- ejs: EmailJS service/template/user ids so acknowledgment emails go to the viewer (template should use {{to_email}}, {{name}}, {{subject}}, {{message}}). Blank = mailto fallback.
-Before going live: create Razorpay orders and verify payment signatures on a server, and re-check prices/promos server-side.
+PLANT DESIGN SPACE WEBSITE
+Open index.html to view the site. Settings are at the top of app.js (CFG).
+
+SETTINGS (CFG in app.js)
+- demo: YouTube ID of the demo video shown on every tool page (currently IdnGaT8-wOY). A tool's own "yt" value in its pds-meta block overrides it.
+- youtube, linkedin: your channel and page links for the footer "Follow us" icons. They are placeholders: replace them.
+- gform: Google Form that receives enquiries (contact page, home page form, "Request a new tool"). Steps:
+    1. Create a Google Form with 5 short-answer questions: Name, Email, Phone, Topic, Message (Message can be paragraph).
+    2. Form menu (three dots) > "Get pre-filled link". Fill each question with any text, click "Get link", open the link.
+    3. In that link you will see entry.NNNNNNN=text for each question. Copy each entry.NNNNNNN id into gform (name, email, phone, topic, message).
+    4. gform.url = the form's public link with "viewform" replaced by "formResponse", for example
+       https://docs.google.com/forms/d/e/FORM_ID/formResponse
+    5. In the Form's Responses tab, link a Google Sheet and turn on email notifications to be told about each new enquiry.
+  Until gform.url is filled, enquiries fall back to opening the visitor's email app.
+- api: web address of the Python mailer that sends the acknowledgement emails from our Gmail account. Setup is in mailer/README.txt. Blank = cart requests open the visitor's email app and no acknowledgement is sent.
+- Phone numbers are mandatory on every form and must start with + and the country code (for example +91 98765 43210).
+- Cart: visitors add tools, then send a request from the cart page. There is no online payment; you reply by email with the price and licence details.
 
 ==================================================
 SITE STRUCTURE (one HTML file per tool, consulting service and training course)
@@ -21,7 +34,7 @@ A folder with no pages disappears from the main page and the menu.
    - Edit the <script id="pds-meta"> block at the top of the page. It drives the cards and menus:
        name, summary (the card text), order (position in lists), topic (pre-selects the enquiry form)
        Tools also have: product, module, cat, ver, price {Monthly, Annual, Lifetime} in INR,
-       img (thumbnail path such as "media/bulk-rename.gif", or ""), yt (YouTube video ID, or "").
+       img (thumbnail path such as "media/bulk-rename.gif", or ""), yt (YouTube video ID, or "" to use the default demo video set in app.js).
    - Run:  python build.py     (needs Python 3.8+, no packages)
    - Upload the whole folder to your host.
 2) REMOVE A PAGE: delete its .html file and run python build.py.
@@ -30,39 +43,3 @@ A folder with no pages disappears from the main page and the menu.
    unless you changed the summary in pds-meta.
 5) Thumbnails go in "media" (16:9, under about 2 MB). Tool names are the cart key: if you rename a tool,
    visitors with the old name in their cart lose that item.
-
-2) ADD, CHANGE OR REMOVE A COUPON / REFERRAL CODE  (file: app.js)
-- Find this line:
-    const PROMOS={NEW10:10,REF10:10};
-- Format is CODE:percentage. Codes must be UPPERCASE (customers can type any case).
-- Add:     const PROMOS={NEW10:10,REF10:10,DIWALI15:15};
-- Remove:  delete its CODE:percentage pair (and the comma next to it).
-- Change the discount: edit the number.
-- IMPORTANT: this list is visible to anyone who views the page source, and the discount is calculated in the browser. It is fine for a trial. For live sales, validate codes and recompute the amount on a server before creating the Razorpay order.
-
-4) OTHER SETTINGS (top of app.js, CFG)
-- email: contact address used by the forms.
-- rzpKey: Razorpay Key ID.
-- ejs: EmailJS service/template/user IDs for acknowledgment emails.
-
-6) MOBILE
-The site is built for phone screens such as iPhone 16 (393 px wide): the layout fits the screen with no pinch-zoom, the menu collapses to a button, and tap targets are large. After editing, check it on a real phone or in your browser's mobile preview (F12, then the device icon).
-
-7) WHERE CUSTOMER / ORDER DATA IS STORED
-- This website stores nothing on its own. The cart lives only in the visitor's browser.
-- Payments: Razorpay Dashboard > Transactions > Payments holds each payment ID, amount, status, and the name, email and phone typed at checkout, plus a description listing the tools and plans bought. You can export it as CSV from the dashboard's reports. This is your master record for who bought what, and you issue licences from it.
-- Order email: after a successful payment the page also emails the order to plantdesignspace@gmail.com (needs EmailJS set up in CFG). It is sent from the buyer's browser, so it can be missed if they close the tab straight away. Do not rely on it as your only record.
-- Enquiries and tool requests: arrive in your inbox through EmailJS (EmailJS also keeps a history).
-- For reliable records add a small server and database (for example Supabase, Firebase, or a Google Sheet through Apps Script) that receives Razorpay's "payment.captured" webhook and saves each order. If you store customers' personal data, publish a privacy policy and handle the data as Indian data-protection rules require.
-
-8) LIMITING NEW10 / REF10 TO NEW USERS
-A static website cannot enforce this. The code list and the discount maths run in the visitor's browser, so anyone can view the codes or edit the page. To enforce it you need a server step:
- 1. Decide what "new user" means, for example: no earlier paid order with the same email (lowercased) or the same phone number.
- 2. When a customer applies a code, the page sends the code, email and phone to your server. The server checks the orders database and answers yes or no.
- 3. The server, not the browser, calculates the discounted amount and creates the Razorpay order (Razorpay Orders API). Checkout then opens with that order ID, so the amount cannot be changed in the browser.
- 4. Razorpay's webhook confirms payment, and the server saves the order and marks that email and phone as used.
- 5. For REF10, also check the referral code against a list of valid referrers, and limit how many times each can be used.
- 6. Optional: verify the email (link or OTP) before applying a code, so people cannot type a fake address.
- Limits: a determined person can still use a new email and phone, so also set expiry dates and usage caps per code and review orders now and then.
- Until a server exists, treat the codes as marketing offers and check orders manually.
-

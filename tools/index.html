@@ -8,9 +8,10 @@
 <script>
 const pf=$('#pf');['All',...new Set(TOOLS.map(t=>t.product))].forEach(p=>pf.add(new Option(p,p)));
 const thumb=t=>`<div class="thumb">${t.img?`<img src="${ROOT+t.img}" alt="${t.name} preview" loading="lazy">`:'<span>GIF preview<br>coming soon</span>'}</div>`;
+const REQ=`<article class="reqcard"><h3>Need a tool we do not have?</h3><p class="mut">Tell us the task you repeat most. We will reply with a scope and price.</p><a class="btn sm" href="#" data-rq>Request a new tool</a></article>`;
 function draw(){const c=cart.get();$('#grid').innerHTML=TOOLS.filter(t=>pf.value=='All'||t.product==pf.value).map(t=>{const k=t.name,sel=c[k]||'Annual';return `<article class="tool ${c[k]?'in':''}" data-k="${k}">${thumb(t)}<h3><a href="${ROOT+t.url}" style="color:inherit;text-decoration:none">${k}</a></h3><small>${t.product} · ${t.module} · ${t.cat} · v${t.ver}</small>
 <label class="f" style="margin:0">Plan<select class="pl">${Object.entries(t.price).map(([p,v])=>`<option value="${p}" ${p==sel?'selected':''}>${p} · ${inr(v)}</option>`).join('')}</select></label>
-<div style="display:flex;gap:8px;margin-top:auto"><a class="btn sm alt" href="${ROOT+t.url}">Details</a><button class="btn sm ${c[k]?'alt':''}" style="margin:0">${c[k]?'Remove from cart':'Add to cart'}</button></div></article>`}).join('')}
+<div style="display:flex;gap:8px;margin-top:auto"><a class="btn sm alt" href="${ROOT+t.url}">Details</a><button class="btn sm ${c[k]?'alt':''}" style="margin:0">${c[k]?'Remove from cart':'Add to cart'}</button></div></article>`}).join('')+REQ}
 pf.onchange=draw;
 $('#grid').onclick=e=>{const b=e.target.closest('button');if(!b)return;const a=b.closest('.tool'),k=a.dataset.k,c=cart.get();if(c[k])delete c[k];else c[k]=a.querySelector('select').value;cart.set(c);draw()};
 $('#grid').onchange=e=>{const a=e.target.closest('.tool'),k=a.dataset.k,c=cart.get();if(c[k]){c[k]=e.target.value;cart.set(c)}};
