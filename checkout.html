@@ -16,9 +16,8 @@ function draw(){const r=calc();$('#empty').hidden=r.it.length>0;$('#co').hidden=
 $('#items').onclick=e=>{const k=e.target.dataset.k;if(!k)return;const c=cart.get();delete c[k];cart.set(c);draw()};
 $('#rf2').onsubmit=async e=>{e.preventDefault();const r=calc(),f=Object.fromEntries(new FormData(e.target)),m=$('#om');if(!r.it.length)return;
  if(!phoneOk(f.phone)){m.className='msg er';m.textContent='Enter your phone number with the country code, for example +91 98765 43210.';return}
- const lines=r.it.map(i=>'- '+i.k+' ('+i.p+'): '+inr(i.v)).join('\n');
- try{m.className='msg';m.textContent='Sending…';
-  const res=await send({name:f.name,email:f.email,phone:f.phone,subject:'Tool request from '+f.name,message:'Tools requested:\n'+lines+'\nEstimated total: '+inr(r.tt)+(f.note?'\nNote: '+f.note:'')},'cart');
+  try{m.className='msg';m.textContent='Sending…';
+  const res=await send({name:f.name,email:f.email,phone:f.phone,subject:'Tool request from '+f.name,message:f.note||'',items:r.it.map(i=>({name:i.k,plan:i.p,cost:i.v}))},'cart');
   if(res=='sent'){cart.set({});$('#co').innerHTML='<div class="panel"><h3>Request sent</h3><p>Thank you. We will email '+f.email+' to confirm the price and licence details.</p><a class="btn" href="tools/index.html">Back to tools</a></div>'}
   else{m.className='msg ok';m.textContent='Your email app has opened with the request. Press Send there to finish. Your cart is kept until then.'}
  }catch(x){m.className='msg er';m.textContent=x.message||('Could not send. Email us at '+CFG.email)}};

@@ -4,7 +4,7 @@ PLANT DESIGN SPACE MAILER (Python, sends from our Gmail account)
 
 What it does
 - The website posts each enquiry or cart request to this small Python service.
-- It emails us a notice (Reply-To is the customer) and emails the customer an acknowledgement, both from plantdesignspace@gmail.com.
+- It sends ONE email from plantdesignspace@gmail.com to the customer, with plantdesignspace@gmail.com in Cc. Cart requests show a table of the tools (SI, Tool Name, Licence Type, Cost, Total cost), and the footer shows the logo (logo.png in this folder) and name.
 - No EmailJS and no third-party mail service. Only Python and Gmail.
 
 1) Gmail setup (once)
@@ -20,7 +20,7 @@ What it does
 
 3) Test
    python mailer.py --test your-own-email@example.com
-   You should get the customer acknowledgement, and plantdesignspace@gmail.com gets a notice.
+   You should receive the acknowledgement, with plantdesignspace@gmail.com in Cc.
 
 4) Run
    Local test:   python mailer.py                       (listens on port 8000)
@@ -39,5 +39,5 @@ Notes
 - Enquiries are recorded in the Google Form (gform in app.js). The mailer only sends the emails, so you may leave gform blank to use the mailer alone.
 - Spam guard: hidden field check, 5 messages per visitor per 10 minutes, length limits, and checks for a valid email and a phone number with country code.
 - Gmail limits sending (about 500 emails a day on a free account; each request uses 2). That is plenty for a site like this.
-- If the notice to us fails the visitor sees an error. If only the acknowledgement fails (for example a mistyped customer address) the visitor still sees success and the problem is written to the log.
+- If the email cannot be sent the visitor sees an error and the problem is written to the log.
 - Keep .env private. If the app password leaks, delete it in Google Account > App passwords and make a new one.

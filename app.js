@@ -12,9 +12,11 @@ const $=(s,r=document)=>r.querySelector(s),inr=n=>'₹'+n.toLocaleString('en-IN'
 const cart={get(){try{return JSON.parse(localStorage.getItem('pds')||'{}')}catch(e){return{}}},
  set(c){try{localStorage.setItem('pds',JSON.stringify(c))}catch(e){}count()}};
 function count(){const n=Object.keys(cart.get()).length,e=$('#cn'),h=$('#hc'),b=$('#cn2');if(e)e.textContent=n;if(b)b.textContent=n;if(h)h.hidden=!n}
-async function send(p,kind){ // posts to the mailer (notice to us + acknowledgement to the customer); falls back to the visitor's email app
- if(!CFG.api){location.href='mailto:'+CFG.email+'?subject='+encodeURIComponent(p.subject)+'&body='+encodeURIComponent(p.message+(p.phone?'\nPhone: '+p.phone:'')+'\n\n'+p.name+' <'+p.email+'>');return 'mailto'}
- const body=JSON.stringify({kind:kind||'enquiry',name:p.name,email:p.email,phone:p.phone||'',topic:p.subject,message:p.message,website:''});
+async function send(p,kind){ // posts to the mailer (one email To the customer, Cc us); falls back to the visitor's email app
+ const it=p.items||[];
+ if(!CFG.api){const L=it.map((i,n)=>(n+1)+'. '+i.name+' ('+i.plan+'): '+inr(i.cost)).join('\n'),T=it.length?'\nTotal cost: '+inr(it.reduce((s,i)=>s+i.cost,0))+'\n\n':'';
+  location.href='mailto:'+CFG.email+'?subject='+encodeURIComponent(p.subject)+'&body='+encodeURIComponent((it.length?'Tools requested:\n'+L+T:'')+p.message+(p.phone?'\nPhone: '+p.phone:'')+'\n\n'+p.name+' <'+p.email+'>');return 'mailto'}
+ const body=JSON.stringify({kind:kind||'enquiry',name:p.name,email:p.email,phone:p.phone||'',topic:p.subject,message:p.message,items:it,website:''});
  if(/^https:\/\/script\.google\.com\//.test(CFG.api)){ // Apps Script cannot answer cross-site reads, so send and assume success
   await fetch(CFG.api,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body});return 'sent'}
  const r=await fetch(CFG.api,{method:'POST',headers:{'Content-Type':'application/json'},body});
