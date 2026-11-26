@@ -12,7 +12,7 @@ SETTINGS (CFG in app.js)
        https://docs.google.com/forms/d/e/FORM_ID/formResponse
     5. In the Form's Responses tab, link a Google Sheet and turn on email notifications to be told about each new enquiry.
   Until gform.url is filled, enquiries fall back to opening the visitor's email app.
-- api: web address of the Python mailer that sends the acknowledgement emails from our Gmail account. Setup is in mailer/README.txt. Blank = cart requests open the visitor's email app and no acknowledgement is sent.
+- api: web address of the service that emails customers an acknowledgement. For GitHub Pages use the Google Apps Script mailer (apps-script/README.txt). The Python mailer in mailer/ is an alternative for hosts that can run Python. Blank = cart requests open the visitor's email app and no acknowledgement is sent.
 - Phone numbers are mandatory on every form and must start with + and the country code (for example +91 98765 43210).
 - Cart: visitors add tools, then send a request from the cart page. There is no online payment; you reply by email with the price and licence details.
 

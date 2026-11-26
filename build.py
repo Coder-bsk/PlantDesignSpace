@@ -13,7 +13,7 @@ from urllib.parse import quote
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SECTIONS = ['training', 'services', 'tools']
-BTN = {'training': 'View courses', 'services': 'Explore consulting', 'tools': 'Browse tools'}
+BTN = {'training': 'View courses', 'services': 'Explore our services', 'tools': 'Browse tools'}
 e = html.escape
 ARR_R = '<svg class="ar" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 BOOT = '<script>try{var t=localStorage.getItem("pds-theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}</script>'
@@ -117,7 +117,7 @@ def main_page(site):
     btns += '<a class="btn alt" href="#enquiry">Send an enquiry</a>'
     about_btn = f'<a class="btn alt" href="{avail[0]}/index.html">{BTN[avail[0]]}</a>' if avail else ''
     stats = ''
-    for s, lab in (('training', 'Training courses'), ('services', 'Consulting services'), ('tools', 'Automation tools')):
+    for s, lab in (('training', 'Courses'), ('services', 'Our services'), ('tools', 'Automation tools')):
         if site[s]:
             stats += f'<div><b>{len(site[s])}</b>{lab}</div>'
     if site['tools']:
@@ -128,8 +128,8 @@ def main_page(site):
         out += f'<section><div class="wrap"><div class="stats">{stats}</div></div></section>\n'
     out += part('about.html').replace('{{ABOUT_BTN}}', about_btn)
     spec = {
-        'training': ('Training', 'Aveva training from modelling to administration', 'Courses taught by working designers. Dates and fees are shared on enquiry.', 'All training courses'),
-        'services': ('Consulting', 'Project and software support for your team', 'Greenfield and brownfield project support, Aveva software support and digital solutions.', 'All consulting services'),
+        'training': ('Courses', 'Aveva training from modelling to administration', 'Courses taught by working designers. Dates and fees are shared on enquiry.', 'All courses'),
+        'services': ('Our Services', 'Project and software support for your team', 'Greenfield and brownfield project support, Aveva software support and digital solutions.', 'All services'),
         'tools': ('Tools', 'Our latest tools', '', 'Explore all tools'),
     }
     n = 0
@@ -158,8 +158,8 @@ def build():
     write('site-data.js', 'const SITE=' + json.dumps(data, ensure_ascii=False) + ';\n')
     write('index.html', main_page(site))
     pages = {
-        'training': ('Training', 'Taught by working designers. Course dates and fees are shared on enquiry.', 'Aveva E3D modelling and administration, PML and PMLNet, Diagrams and Engineering training.'),
-        'services': ('Consulting', 'Greenfield and brownfield project support, Aveva software support and digital solutions from engineers who deliver in your standards.', 'Greenfield and brownfield project support, Aveva software support and digital solutions.'),
+        'training': ('Courses', 'Taught by working designers. Course dates and fees are shared on enquiry.', 'Aveva E3D modelling and administration, PML and PMLNet, Diagrams and Engineering training.'),
+        'services': ('Our Services', 'Greenfield and brownfield project support, Aveva software support and digital solutions from engineers who deliver in your standards.', 'Greenfield and brownfield project support, Aveva software support and digital solutions.'),
     }
     for s in SECTIONS:
         idx = os.path.join(HERE, s, 'index.html')

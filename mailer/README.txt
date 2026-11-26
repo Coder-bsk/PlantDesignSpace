@@ -1,3 +1,5 @@
+NOTE: this Python mailer needs a server that runs Python. GitHub Pages cannot run it, so for GitHub Pages use ../apps-script/ instead.
+
 PLANT DESIGN SPACE MAILER (Python, sends from our Gmail account)
 
 What it does
