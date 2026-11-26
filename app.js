@@ -4,7 +4,7 @@ const CFG={
  linkedin:'https://www.linkedin.com/',    // put your LinkedIn page link here
  demo:'IdnGaT8-wOY',                      // default demo video (YouTube ID) shown on every tool page
  gform:{url:'',name:'',email:'',phone:'',topic:'',message:''}, // Google Form for enquiries (see README)
- api:'https://script.google.com/macros/s/AKfycbyYp2zXgdVT0wB8qDHMHiZOpD5PuD5MYBTsbxzSp4MbiSaz7wcrDNC7P8JAttdNAsXCpQ/exec'                                  // web address of the mailer: a Google Apps Script web app (see apps-script/README.txt) or the Python mailer
+ api:'https://script.google.com/macros/s/AKfycbxGORP1xJJpyaDtMgsP71ENy4RfGGos2RElMT9jiCTbu99ly-hRtl4pPHaCHojL8vRYfA/exec'                                  // web address of the mailer: a Google Apps Script web app (see apps-script/README.txt) or the Python mailer
 };
 const TOOLS=typeof SITE!=='undefined'?SITE.tools:[];
 const slug=n=>n.toLowerCase().replace(/[^a-z0-9]+/g,'-');
